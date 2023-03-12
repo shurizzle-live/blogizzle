@@ -1,6 +1,6 @@
 <script lang="ts">
     import { api } from './stores';
-    import { Login, Register, Home, NotFound } from './pages';
+    import { Login, Register, Home, NotFound, Me, Blog } from './pages';
     import { pattern, redirect } from 'svelte-pathfinder';
     import { isLoading as i18nIsLoading } from 'svelte-i18n';
 
@@ -10,6 +10,7 @@
     });
     let isLogged = false;
     api.subscribe(() => (isLogged = api.isLogged()));
+    let params;
 </script>
 
 {#if apiIsLoading || $i18nIsLoading}
@@ -19,6 +20,10 @@
         <Home />
     {:else if $pattern('/login') || $pattern('/register')}
         {redirect('/')}
+    {:else if $pattern('/me')}
+        <Me />
+    {:else if (params = $pattern('/:username'))}
+        <Blog name={params.username} />
     {:else}
         <NotFound />
     {/if}

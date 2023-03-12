@@ -3,6 +3,10 @@ import type { Subscriber, Unsubscriber, Writable } from 'svelte/store';
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import UserRepo from './Api/UserRepo';
+import PostRepo from './Api/PostRepo';
+
+export * from './Api/UserRepo';
+export * from './Api/PostRepo';
 
 declare type Invalidator<T> = (value?: T) => void;
 
@@ -114,7 +118,7 @@ class Api {
         let res = axios.request<T, AxiosResponse<T, D>, D>(config);
         res.then((res) => {
             if (res.status == 401 || res.status == 403) {
-                Cookies.remove('TOKEN', '');
+                Cookies.remove('TOKEN');
                 this.store.set(null);
             }
         });
@@ -127,7 +131,10 @@ class Api {
             token,
             'SELECT meta::id(id) AS id FROM user WHERE id = $auth.id',
         );
-        Cookies.set('TOKEN', token, 14, 'd');
+        Cookies.set('TOKEN', token, {
+            expires: 14,
+            sameSite: 'strict',
+        });
         this.store.set({ id: res[0].id, token });
     }
 
@@ -216,6 +223,10 @@ class Api {
 
     get user(): UserRepo {
         return new UserRepo(this);
+    }
+
+    get post(): PostRepo {
+        return new PostRepo(this);
     }
 }
 
