@@ -1,0 +1,25 @@
+{
+  "error": {
+    "required": "Field required",
+    "unique": "Field already exists",
+    "not_an_email": "Field is not an email"
+  },
+  "pages": {
+    "signup": "Sign up",
+    "signin": "Sign in"
+  },
+  "form": {
+    "signup": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "password_confirm": "Repeat password",
+      "submit": "Sign up"
+    },
+    "signin": {
+      "name_email": "Name or email",
+      "password": "Password",
+      "submit": "Sign in"
+    }
+  }
+}

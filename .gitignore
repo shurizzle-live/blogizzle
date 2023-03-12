@@ -1,0 +1,9 @@
+/app-
+/app-old
+/simple-surrealdb
+/simple-surrealdb-old
+/Cargo.lock
+/Cargo.toml
+/history.txt
+/requests.sh
+/target
