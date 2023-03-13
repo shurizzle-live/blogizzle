@@ -55,11 +55,10 @@ DEFINE TABLE post SCHEMAFULL
     FOR create WHERE owner = $auth.id;
 
 DEFINE FIELD owner ON post TYPE record (user)
-  VALUE owner = $auth.id
-  ASSERT $value != NONE
+  VALUE $auth.id
   PERMISSIONS
-    FOR select FULL,
-    FOR create, update, delete NONE;
+    FOR select, create FULL,
+    FOR update, delete NONE;
 
 DEFINE FIELD slug ON post TYPE string
   ASSERT $value != NONE AND count($value) > 0
@@ -85,8 +84,9 @@ DEFINE FIELD draft ON post TYPE bool
 
 DEFINE FIELD created_at ON post TYPE datetime
   VALUE time::now()
-  ASSERT $value != NONE
   PERMISSIONS
-    FOR select FULL;
+    FOR select FULL,
+    FOR create FULL,
+    FOR update, delete NONE;
 
 DEFINE INDEX unique_owner_slug ON post COLUMNS owner, slug UNIQUE;

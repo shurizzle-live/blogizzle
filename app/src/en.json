@@ -20,6 +20,11 @@
       "name_email": "Name or email",
       "password": "Password",
       "submit": "Sign in"
+    },
+    "post-new": {
+      "title": "Title",
+      "slug": "Slug",
+      "content": "Your post"
     }
   }
 }

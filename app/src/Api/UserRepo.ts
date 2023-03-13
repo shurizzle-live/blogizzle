@@ -6,6 +6,11 @@ export interface Me {
     email: string;
 }
 
+export interface User {
+    id: string;
+    name: string;
+}
+
 export default class UserRepo {
     private api: Api;
 
@@ -34,6 +39,28 @@ export default class UserRepo {
             'SELECT meta::id(id) AS id, name, email FROM user WHERE id = type::thing("user", $id)',
             {
                 id: this.api.me(),
+            },
+        );
+
+        return res.length > 0 ? res[0] : null;
+    }
+
+    public async get(id: string): Promise<User | null> {
+        let res = await this.api.query<Me>(
+            'SELECT meta::id(id) AS id, name FROM user WHERE id = type::thing("user", $id)',
+            {
+                id,
+            },
+        );
+
+        return res.length > 0 ? res[0] : null;
+    }
+
+    public async getByName(name: string): Promise<User | null> {
+        let res = await this.api.query<Me>(
+            'SELECT meta::id(id) AS id, name FROM user WHERE name = $name',
+            {
+                name,
             },
         );
 

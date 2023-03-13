@@ -1,7 +1,7 @@
 <script lang="ts">
     import { api } from './stores';
-    import { Login, Register, Home, NotFound, Me, Blog } from './pages';
-    import { pattern, redirect } from 'svelte-pathfinder';
+    import { Login, Register, Home, NotFound, Me, Blog, PostNew } from './pages';
+    import { pattern, redirect, query, ConvertedParam } from 'svelte-pathfinder';
     import { isLoading as i18nIsLoading } from 'svelte-i18n';
 
     let apiIsLoading = true;
@@ -11,6 +11,18 @@
     let isLogged = false;
     api.subscribe(() => (isLogged = api.isLogged()));
     let params;
+
+    const getPage = (page: ConvertedParam): number => {
+        if (!page) {
+            return 1;
+        }
+
+        if (Number.isInteger(page)) {
+            return page as number;
+        } else {
+            parseInt(page.toString());
+        }
+    };
 </script>
 
 {#if apiIsLoading || $i18nIsLoading}
@@ -29,10 +41,16 @@
     {:else}
         <Register />
     {/if}
-{:else if $pattern('/me')}
-    <Me />
-{:else if (params = $pattern('/:username'))}
-    <Blog name={params.username} />
+{:else if (params = $pattern('/me/:slug'))}
+    <Me slug={params.slug} />
+{:else if $pattern('/admin/post/new')}
+    {#if isLogged}
+        <PostNew />
+    {:else}
+        {redirect('/login')}
+    {/if}
+{:else if $pattern('/:username/:slug?')}
+    <Blog />
 {:else}
     <NotFound />
 {/if}
