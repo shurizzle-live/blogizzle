@@ -15,27 +15,24 @@
 
 {#if apiIsLoading || $i18nIsLoading}
     Loading...
-{:else if isLogged}
-    {#if $pattern('/')}
-        <Home />
-    {:else if $pattern('/login') || $pattern('/register')}
+{:else if $pattern('/')}
+    <Home />
+{:else if $pattern('/login')}
+    {#if isLogged}
         {redirect('/')}
-    {:else if $pattern('/me')}
-        <Me />
-    {:else if (params = $pattern('/:username'))}
-        <Blog name={params.username} />
     {:else}
-        <NotFound />
-    {/if}
-{:else}
-    <!-- break -->
-    {#if $pattern('/')}
-        <Home />
-    {:else if $pattern('/login')}
         <Login />
-    {:else if $pattern('/register')}
-        <Register />
-    {:else}
-        <NotFound />
     {/if}
+{:else if $pattern('/register')}
+    {#if isLogged}
+        {redirect('/')}
+    {:else}
+        <Register />
+    {/if}
+{:else if $pattern('/me')}
+    <Me />
+{:else if (params = $pattern('/:username'))}
+    <Blog name={params.username} />
+{:else}
+    <NotFound />
 {/if}
