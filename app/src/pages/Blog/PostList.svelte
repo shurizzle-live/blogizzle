@@ -40,7 +40,8 @@
     <header><h1>{user.name}</h1></header>
     <main>
         {#each posts as post}
-            <div on:click={() => goto(`/${user.name}/${post.slug}`)}>
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <div on:click|preventDefault={() => goto(`/${user.name}/${post.slug}`)}>
                 {post.title}
             </div>
         {/each}

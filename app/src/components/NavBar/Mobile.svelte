@@ -11,15 +11,21 @@
 <nav use:bindScroll={{ hide: 'hide' }}>
     <div class="side left">
         {#if back}
-            <a class="pointer" on:click={back}><Fa icon={faChevronLeft} /></a>
+            <a href="/" class="pointer" on:click|preventDefault={back}
+                ><Fa icon={faChevronLeft} /></a
+            >
         {/if}
     </div>
     <div class="spacer" />
     <div class="side right">
         {#if $theme == 'light'}
-            <a class="pointer" on:click={() => theme.set('dark')}><Fa icon={faMoon} /></a>
+            <a href="/" class="pointer" on:click|preventDefault={() => theme.set('dark')}
+                ><Fa icon={faMoon} /></a
+            >
         {:else}
-            <a class="pointer" on:click={() => theme.set('light')}><Fa icon={faSun} /></a>
+            <a href="/" class="pointer" on:click|preventDefault={() => theme.set('light')}
+                ><Fa icon={faSun} /></a
+            >
         {/if}
     </div>
 </nav>
