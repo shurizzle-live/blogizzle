@@ -5,7 +5,7 @@ DEFINE TABLE user SCHEMAFULL
     FOR create, delete NONE;
 
 DEFINE FIELD name ON user
-  ASSERT count(string::trim($user)) > 0
+  ASSERT string::trim($user) NOTINSIDE ["", "me", "www", "search", "admin"]
   PERMISSIONS
     FOR select FULL,
     FOR update WHERE id = $auth.id;
@@ -56,17 +56,18 @@ DEFINE TABLE post SCHEMAFULL
 
 DEFINE FIELD owner ON post TYPE record (user)
   VALUE $auth.id
+  ASSERT $value = $auth.id
   PERMISSIONS
     FOR select, create FULL,
     FOR update, delete NONE;
 
 DEFINE FIELD slug ON post TYPE string
-  ASSERT $value != NONE AND count($value) > 0
+  ASSERT $value != NONE AND count(string::trim($value)) > 0
   PERMISSIONS
     FOR select, create FULL;
 
 DEFINE FIELD title ON post TYPE string
-  ASSERT $value != NONE AND count($value) > 0
+  ASSERT $value != NONE AND count(string::trim($value)) > 0
   PERMISSIONS
     FOR select, create FULL;
 
@@ -86,7 +87,10 @@ DEFINE FIELD created_at ON post TYPE datetime
   VALUE time::now()
   PERMISSIONS
     FOR select FULL,
-    FOR create FULL,
-    FOR update, delete NONE;
+    FOR create, update, delete NONE;
 
 DEFINE INDEX unique_owner_slug ON post COLUMNS owner, slug UNIQUE;
+
+DEFINE EVENT post_create ON TABLE post WHEN $after.created_at = NONE THEN (
+  UPDATE $this SET created_at = time::now()
+);
