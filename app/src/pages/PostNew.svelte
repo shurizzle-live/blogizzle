@@ -7,8 +7,17 @@
     import makeSlug from 'slug';
     import { redirect } from 'svelte-pathfinder';
 
+    const slugNotExists = () => {
+        return async (value: string) => {
+            const valid = !(await api.post.slugExists(api.me(), value));
+            return { valid, name: 'unique' };
+        };
+    };
+
     const title = field('title', '', [required()]);
-    const slug = field('slug', '', [required()]);
+    const slug = field('slug', '', [required(), slugNotExists()], {
+        stopAtFirstError: true,
+    });
     const content = field('content', '', [required()]);
     let draft = false;
     const form = _form(title, slug, content);
@@ -57,6 +66,7 @@
                     class="w-full"
                     field={title}
                     placeholder={$_('form.post-new.title')}
+                    disabled={submitting}
                 />
             </fieldset>
             <fieldset>
@@ -65,19 +75,30 @@
                     class="w-full"
                     field={slug}
                     placeholder={$_('form.post-new.slug')}
+                    disabled={submitting}
                 />
             </fieldset>
         </div>
         <fieldset class="post-content">
-            <textarea bind:value={$content.value} placeholder={$_('form.post-new.content')} />
+            <textarea
+                bind:value={$content.value}
+                placeholder={$_('form.post-new.content')}
+                disabled={submitting}
+            />
         </fieldset>
         <div class="post-submit">
             <div class="submit-wrapper">
                 <fieldset>
-                    <label><input type="checkbox" bind:checked={draft} /> Draft</label>
+                    <label
+                        ><input type="checkbox" bind:checked={draft} disabled={submitting} /> Draft</label
+                    >
                 </fieldset>
                 <fieldset style="text-align: right">
-                    <input type="submit" value="Create" />
+                    <input
+                        type="submit"
+                        value="Create"
+                        disabled={!$form.dirty || !$form.valid || submitting}
+                    />
                 </fieldset>
             </div>
         </div>

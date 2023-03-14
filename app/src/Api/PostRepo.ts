@@ -42,4 +42,16 @@ export default class PostRepo {
             },
         );
     }
+
+    public async slugExists(user: string, slug: string): Promise<boolean> {
+        let res = await this.api.query<{ exists: boolean }>(
+            'SELECT count() > 0 AS exists FROM post WHERE owner = type::thing("user", $user) AND slug = $slug',
+            {
+                user,
+                slug,
+            },
+        );
+
+        return res.length > 0 ? res[0].exists : false;
+    }
 }

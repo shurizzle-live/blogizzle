@@ -19,15 +19,21 @@
         };
     };
 
-    const name = field('name', '', [required(), nameNotExists()]);
-    const email = field('email', '', [emailValid(), emailNotExists()]);
-    const password = field('password', '', [required()]);
-    const passwordConfirmation = field('passwordConfirmation', '', [
-        required(),
-        matchField(password),
-    ]);
+    const name = field('name', '', [required(), nameNotExists()], {
+        valid: false,
+        stopAtFirstError: true,
+    });
+    const email = field('email', '', [emailValid(), emailNotExists()], {
+        valid: false,
+        stopAtFirstError: true,
+    });
+    const password = field('password', '', [required()], {
+        valid: false,
+    });
+    const passwordConfirmation = field('passwordConfirmation', '', [matchField(password)], {
+        valid: false,
+    });
     const form = _form(name, email, password, passwordConfirmation);
-    form.validate();
 
     let submitting = false;
     let error: string | null;
