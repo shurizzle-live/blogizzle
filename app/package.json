@@ -25,11 +25,13 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "axios": "^1.3.4",
+    "date-fns": "^2.29.3",
     "js-cookie": "^3.0.1",
     "slug": "^8.2.2",
     "svelte-fa": "^3.0.3",
     "svelte-forms": "^2.3.1",
     "svelte-i18n": "^3.6.0",
+    "svelte-markdown": "^0.2.3",
     "svelte-pathfinder": "^4.5.0",
     "svelte-tippy": "^1.3.2"
   }

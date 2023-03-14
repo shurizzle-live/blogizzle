@@ -1,6 +1,6 @@
 <script lang="ts">
     import { api } from './stores';
-    import { Login, Register, Home, NotFound, Me, Blog, PostNew } from './pages';
+    import { Login, Register, Home, NotFound, Me, Blog, PostCreate, PostEdit } from './pages';
     import { pattern, redirect, query, ConvertedParam } from 'svelte-pathfinder';
     import { isLoading as i18nIsLoading } from 'svelte-i18n';
 
@@ -43,9 +43,15 @@
     {/if}
 {:else if (params = $pattern('/me/:slug'))}
     <Me slug={params.slug} />
-{:else if $pattern('/admin/post/new')}
+{:else if $pattern('/admin/post/create')}
     {#if isLogged}
-        <PostNew />
+        <PostCreate />
+    {:else}
+        {redirect('/login')}
+    {/if}
+{:else if (params = $pattern('/admin/post/edit/:id'))}
+    {#if isLogged}
+        <PostEdit postId={params.id} />
     {:else}
         {redirect('/login')}
     {/if}

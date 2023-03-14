@@ -5,7 +5,7 @@ DEFINE TABLE user SCHEMAFULL
     FOR create, delete NONE;
 
 DEFINE FIELD name ON user
-  ASSERT string::trim($user) NOTINSIDE ["", "me", "www", "search", "admin"]
+  ASSERT string::trim($user) NOTINSIDE ["", "me", "www", "search", "admin", "login", "register"]
   PERMISSIONS
     FOR select FULL,
     FOR update WHERE id = $auth.id;
@@ -50,9 +50,8 @@ DEFINE SCOPE allusers
 
 DEFINE TABLE post SCHEMAFULL
   PERMISSIONS
-    FOR select WHERE not(draft) OR owner = $auth.id,
-    FOR update, delete WHERE owner = $auth.id,
-    FOR create WHERE owner = $auth.id;
+    FOR select WHERE draft = false OR owner = $auth.id,
+    FOR create, update, delete WHERE owner = $auth.id;
 
 DEFINE FIELD owner ON post TYPE record (user)
   VALUE $auth.id
@@ -62,26 +61,16 @@ DEFINE FIELD owner ON post TYPE record (user)
     FOR update, delete NONE;
 
 DEFINE FIELD slug ON post TYPE string
-  ASSERT $value != NONE AND count(string::trim($value)) > 0
-  PERMISSIONS
-    FOR select, create FULL;
+  ASSERT $value != NONE AND count(string::trim($value)) > 0;
 
 DEFINE FIELD title ON post TYPE string
-  ASSERT $value != NONE AND count(string::trim($value)) > 0
-  PERMISSIONS
-    FOR select, create FULL;
+  ASSERT $value != NONE AND count(string::trim($value)) > 0;
 
 DEFINE FIELD content ON post TYPE string
-  ASSERT $value != NONE AND count($value) > 0
-  PERMISSIONS
-    FOR select, create FULL;
+  ASSERT $value != NONE AND count($value) > 0;
 
 DEFINE FIELD draft ON post TYPE bool
-  VALUE false
-  ASSERT $value != NONE
-  PERMISSIONS
-    FOR select WHERE owner = $auth.id,
-    FOR create FULL;
+  ASSERT $value != NONE;
 
 DEFINE FIELD created_at ON post TYPE datetime
   VALUE time::now()

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Template } from '@/components';
     import List from './Blog/PostList.svelte';
+    import Single from './Blog/PostSingle.svelte';
     import { paramable } from 'svelte-pathfinder';
     import { User } from '@/Api/UserRepo';
     import { api } from '@/stores';
@@ -19,13 +19,11 @@
     Loading...
 {:then}
     {#if user}
-        <Template>
-            {#if $parameters.slug}
-                Single post
-            {:else}
-                <List {user} />
-            {/if}
-        </Template>
+        {#if $parameters.slug}
+            <Single {user} slug={$parameters.slug} />
+        {:else}
+            <List {user} />
+        {/if}
     {:else}
         <NotFound />
     {/if}

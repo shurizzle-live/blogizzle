@@ -42,7 +42,7 @@
 
         @media screen and (max-width: 992px) {
             & {
-                padding: 0 10px;
+                max-width: none;
             }
         }
     }

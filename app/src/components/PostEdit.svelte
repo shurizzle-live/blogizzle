@@ -5,22 +5,32 @@
     import { Input } from '@/components';
     import { _ } from 'svelte-i18n';
     import makeSlug from 'slug';
-    import { redirect } from 'svelte-pathfinder';
+    import { createEventDispatcher } from 'svelte';
+    import { Post } from '@/Api';
 
-    const slugNotExists = () => {
+    const slugNotExists = (id?: string | null) => {
         return async (value: string) => {
-            const valid = !(await api.post.slugExists(api.me(), value));
+            const valid = !(await api.post.slugExists(api.me(), value, id));
             return { valid, name: 'unique' };
         };
     };
 
-    const title = field('title', '', [required()]);
-    const slug = field('slug', '', [required(), slugNotExists()], {
-        stopAtFirstError: true,
+    export let post: Post | null = null;
+
+    const title = field('title', post?.title ?? '', [required()], {
+        checkOnInit: Boolean(post),
     });
-    const content = field('content', '', [required()]);
-    let draft = false;
-    const form = _form(title, slug, content);
+    const slug = field('slug', post?.slug ?? '', [required(), slugNotExists(post?.id)], {
+        stopAtFirstError: true,
+        checkOnInit: Boolean(post),
+    });
+    const content = field('content', post?.content ?? '', [required()], {
+        checkOnInit: Boolean(post),
+    });
+    let draft = field('draft', post?.draft ?? false, [], {
+        checkOnInit: Boolean(post),
+    });
+    const form = _form(title, slug, content, draft);
     form.validate();
 
     title.subscribe((title) => {
@@ -29,30 +39,18 @@
         }
     });
 
-    let submitting = false;
-    const submit = () => {
-        console.log('here');
-        if ($form.dirty && $form.valid) {
-            submitting = true;
-            try {
-                const fut = api.post.create({
-                    title: $title.value,
-                    slug: $slug.value,
-                    content: $content.value,
-                    draft,
-                });
+    const dispatch = createEventDispatcher();
 
-                fut.then(
-                    (p) => {
-                        redirect(`/me/${p.slug}`);
-                    },
-                    () => {
-                        submitting = false;
-                    },
-                );
-            } catch (_e) {
-                submitting = false;
-            }
+    export let submitting: boolean;
+
+    const submit = () => {
+        if ($form.dirty && $form.valid) {
+            dispatch('submit', {
+                title: $title.value,
+                slug: $slug.value,
+                content: $content.value,
+                draft: $draft.value,
+            });
         }
     };
 </script>
@@ -90,7 +88,8 @@
             <div class="submit-wrapper">
                 <fieldset>
                     <label
-                        ><input type="checkbox" bind:checked={draft} disabled={submitting} /> Draft</label
+                        ><input type="checkbox" bind:checked={$draft.value} disabled={submitting} />
+                        Draft</label
                     >
                 </fieldset>
                 <fieldset style="text-align: right">
